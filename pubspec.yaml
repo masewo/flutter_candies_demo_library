@@ -15,7 +15,7 @@ dependencies:
   http_client_helper: any  
   extended_image: any  
   pull_to_refresh_notification: any
-  extended_text: ^1.0.0
+  extended_text: ^1.0.1
   like_button: any
   
   #image_picker_saver: 0.3.0
@@ -23,6 +23,10 @@ dependencies:
   url_launcher: 5.3.0
   intl: ^0.15.7
   oktoast: ^2.1.4
+dependency_overrides:
+  extended_text_library:
+    git:
+      url: https://github.com/masewo/extended_text_library.git
 dev_dependencies:
   ff_annotation_route: any
 # For information on the generic Dart part of this file, see the

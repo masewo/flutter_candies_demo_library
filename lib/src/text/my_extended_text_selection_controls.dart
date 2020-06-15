@@ -25,9 +25,10 @@ class MyExtendedMaterialTextSelectionControls
     BuildContext context,
     Rect globalEditableRegion,
     double textLineHeight,
-    Offset selectionMidpoint,
+    Offset position,
     List<TextSelectionPoint> endpoints,
     TextSelectionDelegate delegate,
+      ClipboardStatusNotifier clipboardStatus,
   ) {
     assert(debugCheckHasMediaQuery(context));
     assert(debugCheckHasMaterialLocalizations(context));
@@ -47,24 +48,27 @@ class MyExtendedMaterialTextSelectionControls
       - textLineHeight
       - paddingTop;
     final bool fitsAbove = closedToolbarHeightNeeded <= availableHeight;
-    final Offset anchor = Offset(
-      globalEditableRegion.left + selectionMidpoint.dx,
-      fitsAbove
-        ? globalEditableRegion.top + startTextSelectionPoint.point.dy - textLineHeight - _kToolbarContentDistance
-        : globalEditableRegion.top + endTextSelectionPoint.point.dy + _kToolbarContentDistanceBelow,
-    );
+
+    final double y = fitsAbove
+        ? startTextSelectionPoint.point.dy -
+        _kToolbarContentDistance -
+        textLineHeight
+        : startTextSelectionPoint.point.dy +
+        _kToolbarHeight +
+        _kToolbarContentDistanceBelow;
+    final Offset preciseMidpoint = Offset(position.dx, y);
 
     return Stack(
       children: <Widget>[
         CustomSingleChildLayout(
           delegate: ExtendedMaterialTextSelectionToolbarLayout(
-            anchor,
-            _kToolbarScreenPadding + paddingTop,
-            fitsAbove,
+            MediaQuery.of(context).size,
+            globalEditableRegion,
+              preciseMidpoint
           ),
           child: _TextSelectionToolbar(
           handleCut: canCut(delegate) ? () => handleCut(delegate) : null,
-          handleCopy: canCopy(delegate) ? () => handleCopy(delegate) : null,
+          handleCopy: canCopy(delegate) ? () => handleCopy(delegate, clipboardStatus) : null,
           handlePaste: canPaste(delegate) ? () => handlePaste(delegate) : null,
           handleSelectAll:
               canSelectAll(delegate) ? () => handleSelectAll(delegate) : null,
